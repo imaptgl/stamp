@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>休行</title>
+    <!-- Adobe Fonts（Typekit）網頁字體：用在標題 -->
+    <script>
+      (function (d) {
+        var config = {
+            kitId: "epp7gkb",
+            scriptTimeout: 3000,
+            async: true,
+          },
+          h = d.documentElement,
+          t = setTimeout(function () {
+            h.className =
+              h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive";
+          }, config.scriptTimeout),
+          tk = d.createElement("script"),
+          f = false,
+          s = d.getElementsByTagName("script")[0],
+          a;
+        h.className += " wf-loading";
+        tk.src = "https://use.typekit.net/" + config.kitId + ".js";
+        tk.async = true;
+        tk.onload = tk.onreadystatechange = function () {
+          a = this.readyState;
+          if (f || (a && a != "complete" && a != "loaded")) return;
+          f = true;
+          clearTimeout(t);
+          try {
+            Typekit.load(config);
+          } catch (e) {}
+        };
+        s.parentNode.insertBefore(tk, s);
+      })(document);
+    </script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="ttl">休　行</div>
+
+    <div id="stage">
+      <canvas id="cam"></canvas>
+      <!-- 鏡頭畫面（light 模式） -->
+      <video id="v" playsinline muted></video>
+      <!-- 鏡頭來源；full 模式時直接顯示 -->
+      <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <filter id="water" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.008 0.012"
+            numOctaves="2"
+            seed="3"
+            result="n"
+          >
+            <animate
+              attributeName="baseFrequency"
+              dur="14s"
+              values="0.008 0.012;0.013 0.008;0.008 0.012"
+              repeatCount="indefinite"
+            />
+          </feTurbulence>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="30" />
+        </filter>
+      </svg>
+      <canvas id="c" width="960" height="720"></canvas>
+      <!-- 靶心、印章、漣漪 -->
+      <div id="hud"></div>
+      <div id="msg"></div>
+      <div id="hint">
+        按下「開啟鏡頭」，休行任務：找到水面下的光點，握拳往下壓一下
+      </div>
+    </div>
+
+    <div class="bar">
+      <button class="primary" id="start">開啟鏡頭</button>
+      <button id="test">測試蓋章</button>
+      <button id="debug">顯示偵測點</button>
+      <button id="clear">重新開始</button>
+    </div>
+    <p class="note" id="mode">
+      偵測方式：握著東西（半握拳）的手向下壓一下就會蓋章。也可以用空白鍵或點擊畫面測試。
+    </p>
+
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/hands.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

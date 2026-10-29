@@ -1,0 +1,243 @@
+/* ===== 字體 =====
+   LINE Seed TW（本機 WOFF）：內文與備用標題
+   Adobe Fonts（index.html 裡的 Typekit）：標題 */
+@font-face {
+  font-family: "LINE Seed TW";
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+  src: url("fonts/LINESeedTW_OTF_Th.woff") format("woff");
+} /* Thin */
+@font-face {
+  font-family: "LINE Seed TW";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("fonts/LINESeedTW_OTF_Rg.woff") format("woff");
+} /* Regular */
+@font-face {
+  font-family: "LINE Seed TW";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("fonts/LINESeedTW_OTF_Bd.woff") format("woff");
+} /* Bold */
+@font-face {
+  font-family: "LINE Seed TW";
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  src: url("fonts/LINESeedTW_OTF_Eb.woff") format("woff");
+} /* ExtraBold */
+
+/* ===== 色彩（灰階為主，粉色只當輔助色）===== */
+:root {
+  --bg: #e9e9eb;
+  --fg: #46464c; /* 主要文字／按鈕文字 */
+  --muted: #8a8a92;
+  --accent: #5c5c64; /* 主按鈕、強調色（灰） */
+  --line: #b9b9bf; /* 按鈕邊框 */
+  --pink: #e8a9bd; /* 輔助色：游標、目標點等小地方 */
+  --on-photo: #3f3f45; /* 畫面上的文字顏色 */
+  --font-body:
+    "LINE Seed TW", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei",
+    sans-serif;
+  /* 標題字體：Adobe Fonts 的 Momochidori。三種寬度可換：
+     "momochidori"（標準）／"momochidori-condensed"（窄）／"momochidori-wide"（寬），字重 400 或 700 */
+  --font-title: "momochidori-wide", "LINE Seed TW", "Noto Sans TC", sans-serif;
+  --title-weight: 400;
+  --glow:
+    0 0 10px rgba(255, 255, 255, 0.9), 0 0 3px rgba(255, 255, 255, 0.85); /* 文字白色柔光，讓字在水面上也讀得到 */
+}
+
+/* ===== 基本 ===== */
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+/* ===== 舞台（鏡頭 + 畫布）===== */
+#stage {
+  position: fixed;
+  inset: 0;
+  background: #cfcfd3;
+  overflow: hidden;
+}
+#cam,
+#c {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* light 模式：顏色與波紋都在 script.js 的 drawCam() 裡算好 */
+#cam {
+  object-fit: cover; /* 小畫布放大後本身就是柔的；不再加 CSS 模糊與動畫（它們是最吃效能的部分） */
+}
+/* 鏡頭來源（隱藏，只給程式讀取） */
+#v {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* full 模式：直接顯示 video 並套用 SVG 水波扭動（較吃效能） */
+.full #cam {
+  display: none;
+}
+.full #v {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
+  transform: scaleX(-1);
+  filter: url(#water) blur(3px) grayscale(0.7) contrast(0.7) brightness(1.3);
+}
+
+/* 上方霧白（水平線以上淡入白色）＋四周暈影 */
+#stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(236, 236, 239, 0.92) 0%,
+      rgba(236, 236, 239, 0.55) 22%,
+      rgba(236, 236, 239, 0) 48%
+    ),
+    radial-gradient(
+      ellipse at center,
+      rgba(70, 70, 78, 0) 50%,
+      rgba(70, 70, 78, 0.28) 100%
+    );
+}
+
+/* ===== 畫面上的文字 ===== */
+.ttl {
+  position: fixed;
+  top: 14px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  text-align: center;
+  font-family: var(--font-title);
+  font-weight: var(--title-weight);
+  font-size: 18px;
+  letter-spacing: 0.5em;
+  pointer-events: none;
+  color: var(--on-photo);
+  text-shadow: var(--glow);
+}
+#hud {
+  position: absolute;
+  top: 52px;
+  left: 14px;
+  right: 14px;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: var(--on-photo);
+  text-shadow: var(--glow);
+}
+#hint {
+  position: absolute;
+  inset: 0;
+  top: 88px;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  pointer-events: none;
+  padding: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--on-photo);
+  text-shadow: var(--glow);
+}
+#msg {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  font-family: var(--font-title);
+  font-weight: var(--title-weight);
+  font-size: clamp(22px, 4vw, 34px);
+  letter-spacing: 0.3em;
+  line-height: 1.8;
+  white-space: pre-line;
+  text-align: center;
+  color: var(--fg);
+  background: rgba(232, 232, 235, 0.78);
+}
+
+/* ===== 按鈕與說明 ===== */
+.bar {
+  position: fixed;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+button {
+  font: inherit;
+  font-size: 14px;
+  padding: 8px 18px;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(236, 236, 239, 0.85);
+  color: var(--fg);
+}
+button:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+button.primary:hover {
+  background: #3f3f45;
+  border-color: #3f3f45;
+}
+
+.note {
+  position: fixed;
+  bottom: 62px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  margin: 0 auto;
+  max-width: 480px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--on-photo);
+  text-shadow: var(--glow);
+}
